@@ -244,3 +244,6 @@
 ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.6); }
+
+.auth-input { color: #ffffff !important; }
+.auth-input::placeholder { color: #94a3b8 !important; }

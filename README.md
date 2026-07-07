@@ -24,19 +24,20 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 *(Replace the image paths below with the actual screenshots before pushing to GitHub)*
 
 ### 1. Authentication Interface
-![Authentication Page](./docs/auth-screenshot.png)
+![Login Page](./Docs/login.png)
+![Registration Page](./Docs/registration.png)
 > *The login and registration flow featuring real-time password strength validation, regex email checking, and the signature animated floating neon blobs in the background.*
 
 ### 2. Dashboard & Today's Progress
-![Dashboard View](./docs/dashboard-screenshot.png)
+![Dashboard View](./Docs/Dashboard.png)
 > *The main dashboard summarizing your day. Features a mathematical SVG circular progress indicator that perfectly tracks your daily task completion rate.*
 
 ### 3. Interactive Kanban Board
-![Kanban Board](./docs/kanban-screenshot.png)
+![Kanban Board](./Docs/Kanban_Dashboard.png)
 > *The list view configured as a Kanban Board. Users can click and drag tasks effortlessly between status columns, triggering real-time database updates.*
 
 ### 4. Global Search Palette
-![Global Search](./docs/search-screenshot.png)
+![Global Search](./Docs/Global_Search.png)
 > *The debounced global search dropdown in the Navbar, allowing users to instantly locate tasks across their entire workspace.*
 
 ---

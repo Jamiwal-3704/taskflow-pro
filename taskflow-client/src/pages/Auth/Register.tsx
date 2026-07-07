@@ -80,14 +80,14 @@ export const Register: React.FC = () => {
 
   // ── Input styling helper ──
   const inputClass = (hasError: boolean, isValid?: boolean) => {
-    const base = 'w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none';
+    const base = 'auth-input w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none';
     if (hasError) {
-      return `${base} bg-red-950/30 border-2 border-red-500/60 text-slate-100 placeholder-red-300/40 focus:border-red-400 focus:ring-2 focus:ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]`;
+      return `${base} bg-red-950/30 border-2 border-red-500/60 text-white placeholder-red-300/60 focus:border-red-400 focus:ring-2 focus:ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]`;
     }
     if (isValid) {
-      return `${base} bg-emerald-950/20 border-2 border-emerald-500/40 text-slate-100 placeholder-slate-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]`;
+      return `${base} bg-emerald-950/20 border-2 border-emerald-500/40 text-white placeholder-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]`;
     }
-    return `${base} bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500`;
+    return `${base} bg-slate-950/50 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500`;
   };
 
   // ── Submit handler ──
@@ -153,18 +153,18 @@ export const Register: React.FC = () => {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="text-center mb-7 relative">
+        <div className="text-center mb-8 relative">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600/20 text-blue-400 mb-3 border border-blue-500/20 text-xl font-bold">
             TF
           </div>
-          <h2 className="text-2xl font-bold text-slate-100">Create Account</h2>
-          <p className="text-slate-400 text-sm mt-1.5">Join TaskFlow Pro to manage your tasks &amp; logs</p>
+          <h2 className="!text-white text-2xl font-bold">Create Account</h2>
+          <p className="!text-slate-300 text-sm mt-1.5">Join TaskFlow Pro to manage your tasks &amp; logs</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 relative" noValidate>
           {/* Display Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Display Name</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Display Name</label>
             <input
               type="text"
               value={displayName}
@@ -180,7 +180,7 @@ export const Register: React.FC = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
             <input
               type="email"
               value={email}
@@ -196,7 +196,7 @@ export const Register: React.FC = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Password</label>
             <input
               type="password"
               value={password}
@@ -247,7 +247,7 @@ export const Register: React.FC = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Confirm Password</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
@@ -275,7 +275,7 @@ export const Register: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-slate-500 relative">
+        <div className="mt-6 text-center text-xs !text-slate-300 relative">
           Already have an account?{' '}
           <Link to="/login" className="text-blue-400 hover:underline font-medium">
             Sign in

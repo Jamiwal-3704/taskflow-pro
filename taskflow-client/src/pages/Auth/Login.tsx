@@ -21,14 +21,14 @@ export const Login: React.FC = () => {
   const emailError = useMemo(() => (touched.email ? validateEmail(email) : ''), [email, touched.email]);
 
   const inputClass = (hasError: boolean, isValid?: boolean) => {
-    const base = 'w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none';
+    const base = 'auth-input w-full px-4 py-3 rounded-xl text-sm transition-all duration-300 focus:outline-none';
     if (hasError) {
-      return `${base} bg-red-950/30 border-2 border-red-500/60 text-slate-100 placeholder-red-300/40 focus:border-red-400 focus:ring-2 focus:ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]`;
+      return `${base} bg-red-950/30 border-2 border-red-500/60 text-white placeholder-red-300/60 focus:border-red-400 focus:ring-2 focus:ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.15)]`;
     }
     if (isValid) {
-      return `${base} bg-emerald-950/20 border-2 border-emerald-500/40 text-slate-100 placeholder-slate-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]`;
+      return `${base} bg-emerald-950/20 border-2 border-emerald-500/40 text-white placeholder-slate-400 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]`;
     }
-    return `${base} bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500`;
+    return `${base} bg-slate-950/50 border border-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,13 +80,13 @@ export const Login: React.FC = () => {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600/20 text-blue-400 mb-3 border border-blue-500/20 text-xl font-bold">
             TF
           </div>
-          <h2 className="text-2xl font-bold text-slate-100">Welcome Back</h2>
-          <p className="text-slate-400 text-sm mt-1.5">Sign in to sync your collaborative tasks &amp; trackers</p>
+          <h2 className="!text-white text-2xl font-bold">Welcome Back</h2>
+          <p className="!text-slate-300 text-sm mt-1.5">Sign in to sync your collaborative tasks &amp; trackers</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 relative" noValidate>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
             <input
               type="email"
               value={email}
@@ -101,7 +101,7 @@ export const Login: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Password</label>
+            <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Password</label>
             <input
               type="password"
               value={password}
@@ -125,12 +125,12 @@ export const Login: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-slate-500 relative">
+        <p className="text-center text-sm !text-slate-300 mt-6">
           Don't have an account?{' '}
           <Link to="/register" className="text-blue-400 hover:underline font-medium">
             Sign up for free
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );
