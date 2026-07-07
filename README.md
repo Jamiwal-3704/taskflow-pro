@@ -1,6 +1,5 @@
 # TaskFlow Pro 🚀
 
-![TaskFlow Pro Banner](./docs/banner.png) <!-- ADD BANNER SCREENSHOT HERE -->
 
 TaskFlow Pro is a highly polished, full-stack productivity and task management application designed for both personal and business use. It features a stunning, state-of-the-art frosted glass UI (Glassmorphism), real-time data persistence, and interactive drag-and-drop Kanban boards.
 
