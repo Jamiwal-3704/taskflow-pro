@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+/* ============================================
+   DARK MODE (DEFAULT) - Theme Variables
+   ============================================ */
+:root {
+  --bg-primary: #020617;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --glass-bg: rgba(15, 23, 42, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --glass-shine: rgba(255, 255, 255, 0.06);
+  --sidebar-bg: rgba(7, 14, 35, 0.75);
+  --card-bg: rgba(15, 23, 42, 0.45);
+  --card-hover-border: rgba(59, 130, 246, 0.45);
+  --input-bg: rgba(2, 6, 23, 0.60);
+  --border-primary: rgba(255, 255, 255, 0.08);
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --glow-color: rgba(59, 130, 246, 0.15);
+}
+
+/* ============================================
+   LIGHT MODE - Corrected for visible text + strong glass
+   ============================================ */
+[data-theme="light"] {
+  --bg-primary: #eef2f7;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(99, 102, 241, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-shine: rgba(255, 255, 255, 0.5);
+  --sidebar-bg: rgba(248, 250, 252, 0.80);
+  --card-bg: rgba(255, 255, 255, 0.80);
+  --card-hover-border: rgba(59, 130, 246, 0.5);
+  --input-bg: rgba(255, 255, 255, 0.90);
+  --border-primary: rgba(15, 23, 42, 0.12);
+  --hover-bg: rgba(15, 23, 42, 0.06);
+  --glow-color: rgba(99, 102, 241, 0.12);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.5s ease, color 0.5s ease;
+    @apply font-sans antialiased selection:bg-blue-500 selection:text-white;
+  }
+}
+
+/* ============================================
+   GLASS PANEL - Sidebar / Navbar / Dialogs
+   ============================================ */
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 var(--glass-shine);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+/* ============================================
+   GLASS CARD - Task cards, progress panels
+   ============================================ */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--card-hover-border);
+  box-shadow:
+    0 12px 30px -6px rgba(59, 130, 246, 0.18),
+    0 4px 12px rgba(59, 130, 246, 0.10),
+    inset 0 1px 0 var(--glass-highlight);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   GLASS INPUT - Form inputs and textareas
+   ============================================ */
+.glass-input {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ============================================
+   GLASS NAV ITEM - Sidebar navigation items
+   ============================================ */
+.glass-nav-item {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.4);
+  color: var(--text-secondary);
+}
+
+.glass-nav-item:hover {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  color: var(--text-primary);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 var(--glass-highlight);
+  transform: translateX(2px);
+}
+
+.glass-nav-item.active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+  font-weight: 700;
+  box-shadow:
+    0 4px 16px rgba(59, 130, 246, 0.12),
+    inset 0 1px 0 rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="light"] .glass-nav-item {
+  color: #334155;
+}
+
+[data-theme="light"] .glass-nav-item:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(99, 102, 241, 0.2);
+  box-shadow:
+    0 4px 16px rgba(99, 102, 241, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .glass-nav-item.active {
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.10);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+/* ============================================
+   THEME TRANSITION
+   ============================================ */
+.theme-bg-transition {
+  transition: background 0.4s ease, border-color 0.4s ease, color 0.3s ease, box-shadow 0.4s ease;
+}
+
+/* ============================================
+   LIGHT MODE TEXT OVERRIDES — force visibility
+   ============================================ */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5 {
+  color: #0f172a;
+}
+
+[data-theme="light"] p,
+[data-theme="light"] span:not(.preserve-color),
+[data-theme="light"] label {
+  color: #334155;
+}
+
+/* Input text visibility fix for light mode */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  color: #0f172a;
+}
+
+[data-theme="light"] option {
+  background: white;
+  color: #0f172a;
+}
+
+/* ============================================
+   KEYFRAMES
+   ============================================ */
+@keyframes moveBackground {
+  from { background-position: 0% 0%; }
+  to { background-position: 0% -1000%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* ============================================
+   CUSTOM SCROLLBARS
+   ============================================ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.6); }
