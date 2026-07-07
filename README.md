@@ -24,8 +24,12 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 *(Replace the image paths below with the actual screenshots before pushing to GitHub)*
 
 ### 1. Authentication Interface
-![Login Page](./Docs/login.png)
-![Registration Page](./Docs/registration.png)
+
+<p align="center">
+  <img src="./Docs/login.png" alt="Login Page" width="400" />
+  &nbsp; &nbsp;
+  <img src="./Docs/registration.png" alt="Registration Page" width="400" />
+</p>
 > *The login and registration flow featuring real-time password strength validation, regex email checking, and the signature animated floating neon blobs in the background.*
 
 ### 2. Dashboard & Today's Progress
