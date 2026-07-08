@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import Lenis from 'lenis';
 import type { TodoTask, TodoSubtask } from '../../types/task';
 import SubtaskItem from './SubtaskItem';
 import LineItemEditor from './LineItemEditor';
@@ -35,6 +36,33 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Lenis for buttery smooth scrolling inside the modal
+  useEffect(() => {
+    if (!isOpen || !modalRef.current || !contentRef.current) return;
+
+    const lenis = new Lenis({
+      wrapper: modalRef.current,
+      content: contentRef.current,
+      lerp: 0.1,
+      wheelMultiplier: 0.8,
+    });
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, [isOpen]);
 
   const PRESET_COLORS = [
     { value: '', label: 'None' },
@@ -89,6 +117,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         colorHex: colorHex || null,
         deadline: deadline ? new Date(deadline).toISOString() : null,
         plannedDate: plannedDate ? new Date(plannedDate).toISOString() : null,
+        status: task.status,
+        isImportant: task.isImportant,
       });
       onClose();
     } catch (err) {
@@ -123,9 +153,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 z-50 p-4 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-lg glass-panel rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto theme-bg-transition border border-slate-200/5">
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-250/20 dark:border-slate-850">
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Edit Task Details</h3>
+      <div 
+        ref={modalRef} 
+        data-lenis-prevent="true" 
+        className="w-full max-w-lg glass-panel rounded-3xl p-0 shadow-2xl relative max-h-[90vh] overflow-y-auto theme-bg-transition border border-slate-200/5 flex flex-col"
+      >
+        <div ref={contentRef} className="p-6">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-250/20 dark:border-slate-850">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Edit Task Details</h3>
           <button
             onClick={onClose}
             className="text-slate-450 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-350 cursor-pointer text-sm font-semibold"
@@ -264,7 +299,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             <h4 className="text-xs font-bold text-slate-500 dark:text-slate-350 uppercase tracking-wider">Checklist Items</h4>
 
             {/* List of subtasks */}
-            <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+            <div className="space-y-2 pr-1">
               {(task.subTasks || []).map((sub) => (
                 <SubtaskItem
                   key={sub.id}
@@ -299,6 +334,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
         </div>
       </div>
     </div>
+  </div>
   );
 };
 

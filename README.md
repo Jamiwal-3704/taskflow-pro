@@ -13,8 +13,15 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 - **📋 Smart Task Management:** Create, edit, and organize tasks across multiple custom lists. Easily mark tasks as important, set deadlines, and track your performance.
 - **🖱️ Drag & Drop Kanban Board:** Visualize your workflow! Seamlessly drag tasks between "To Do", "In Progress", and "Complete" columns. The database updates your task status instantly.
 - **🔍 Global Search:** A powerful, debounced global search command palette that lets you instantly find any task across all of your lists and navigate directly to it.
-- **📊 Real-Time Analytics:** The Dashboard and "Today" views automatically calculate your daily progress with interactive, dynamically updating circular progress bars.
-- **🎨 Premium UI/UX:** Built with Tailwind CSS, featuring subtle micro-animations, customized scrollbars, dynamic gradients, and a frosted glass design system that feels incredibly modern and responsive.
+- **📈 Day-Wise Tracking & Streaks:** Advanced daily progress tracking with streak counters and dynamic heatmaps to keep you motivated and productive every single day.
+- **🚀 Onboarding Wizard:** A beautiful, multi-step interactive onboarding flow to welcome new users and guide them through setting up their first project.
+- **💡 Full-Stack Feedback System:** A dedicated, fully integrated user feedback mechanism connecting a stunning frontend form directly to a secure backend SQL database.
+- **🎨 Premium UI/UX Engineering:** Built with Tailwind CSS, featuring subtle micro-animations, customized scrollbars, and dynamic gradients.
+- **🛡️ Dual-Layer Security:** Secured via Cloudflare (Layer 1) and native ASP.NET Core Rate Limiting (Layer 2) to mitigate brute-forcing and API abuse.
+- **⚡ Perceived Performance:** Integrated advanced Shimmer UI (skeleton loaders) to mask network latency and ensure the app feels instantaneous.
+- **💎 Hardware-Accelerated Scrolling:** Powered by the Lenis smooth-scrolling engine for a luxurious, "royal" scrolling experience alongside glassmorphism and parallax backgrounds.
+- **🌗 Seamless Light & Dark Mode:** Carefully engineered global theming architecture ensuring flawless accessibility and contrast across both visual modes.
+- **👨‍💻 Integrated Developer Portfolio:** A massive, dedicated "About" page acting as an immersive portfolio—showcasing the complete 1-month engineering sprint, tech stack, and developer profile.
 
 ---
 
@@ -48,28 +55,29 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 ## 🛠️ Technology Stack
 
 **Frontend (Client)**
-- React 18 (TypeScript)
+- React 19 (TypeScript)
 - Vite (Build Tool)
-- Tailwind CSS (Styling & Animations)
+- Tailwind CSS v4 (Styling & Animations)
 - Lucide React (Icons)
-- Axios (API Client)
-- React Router DOM (Routing)
+- Context API (State Management)
+- Lenis (Smooth Scrolling)
 
 **Backend (API)**
-- .NET 10 (C# ASP.NET Core Web API)
+- .NET 8 (C# ASP.NET Core Web API)
 - Entity Framework Core
-- Microsoft SQL Server (MSI\SQLEXPRESS)
+- Microsoft SQL Server
 - JWT Bearer Authentication
+- ASP.NET Core Rate Limiting
 
 ---
 
 ## 🚀 Installation & Setup
 
-Before starting, ensure you have **Node.js**, **.NET SDK**, and **SQL Server** installed on your machine.
+Before starting, ensure you have **Node.js**, **.NET 8 SDK**, and **SQL Server** installed on your machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/taskflow-pro.git
+git clone https://github.com/Jamiwal-3704/taskflow-pro.git
 cd taskflow-pro
 ```
 
@@ -113,7 +121,6 @@ While TaskFlow Pro is fully operational, development is continuous! Here are the
 - [ ] **Collaborative Lists:** Invite other users to your lists via email to collaborate on projects, assign tasks to specific team members, and chat in real-time.
 - [ ] **Workout / Fitness Integrations:** A dedicated module for tracking gym routines, exercise templates, and workout logs directly within the TaskFlow ecosystem.
 - [ ] **Push Notifications:** Web-based push notifications to remind users of impending task deadlines and daily check-ins.
-- [ ] **Dark/Light Theme Toggle:** Adding user preference toggles to seamlessly switch the entire Glassmorphism design system between dark and light modes.
 - [ ] **Task Attachments:** Allow users to upload and attach images or PDFs directly to specific tasks.
 
 ---
@@ -123,5 +130,5 @@ While TaskFlow Pro is fully operational, development is continuous! Here are the
 ---
 
 <div align="center">
-  <i>made with lots of love ❤️ by <b style="text-shadow: 0 0 10px #a78bfa, 0 0 20px #a78bfa; color: #a78bfa;">✨ Jamiwal-3704 ✨</b></i>
+  <i>made with lots of love ❤️ by <b style="text-shadow: 0 0 10px #a78bfa, 0 0 20px #a78bfa; color: #a78bfa;">✨ Sahil Ittan ✨</b></i>
 </div>

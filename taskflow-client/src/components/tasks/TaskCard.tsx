@@ -115,6 +115,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 e.stopPropagation();
                 onImportantChange(task.id, !task.isImportant);
               }}
+              onMouseDown={(e) => e.stopPropagation()}
               type="button"
               className={`text-sm cursor-pointer hover:scale-120 transition-transform ${
                 task.isImportant ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'text-slate-400 dark:text-slate-600'
@@ -126,6 +127,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               <div className="relative">
                 <button
                   onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
+                  onMouseDown={(e) => e.stopPropagation()}
                   className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 px-1 font-bold"
                 >
                   ⋮
@@ -230,6 +232,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               e.stopPropagation();
               onStatusChange(task.id, task.status + 1);
             }}
+            onMouseDown={(e) => e.stopPropagation()}
             type="button"
             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer select-none hover:scale-[1.03] ${
               task.status === 0

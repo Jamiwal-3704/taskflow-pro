@@ -140,7 +140,7 @@ export const GlassButton: React.FC<{
 // ============================================================
 export const GlassFilter: React.FC = () => (
   <svg
-    style={{ position: "fixed", top: 0, left: 0, width: 0, height: 0, overflow: "hidden" }}
+    style={{ position: "fixed", top: 0, left: 0, width: 0, height: 0, overflow: "hidden", pointerEvents: "none" }}
     aria-hidden="true"
   >
     <defs>
