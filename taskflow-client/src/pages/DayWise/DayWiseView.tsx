@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { format, isSameDay, parseISO } from 'date-fns';
 import WeekStrip from '../../components/calendar/WeekStrip';
 import TaskCard from '../../components/tasks/TaskCard';
+import TaskCardSkeleton from '../../components/ui/TaskCardSkeleton';
 import TaskModal from '../../components/tasks/TaskModal';
 import api from '../../api/axios';
 import ENDPOINTS from '../../api/endpoints';
 import type { TodoTask } from '../../types/task';
 import type { TodoList } from '../../types/list';
-import { format, isSameDay, parseISO } from 'date-fns';
 
 export const DayWiseView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -115,8 +116,10 @@ export const DayWiseView: React.FC = () => {
 
       {/* Loading Indicator */}
       {isLoading ? (
-        <div className="py-16 flex justify-center">
-          <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <TaskCardSkeleton key={i} />
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

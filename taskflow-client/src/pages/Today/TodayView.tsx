@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import TaskCard from '../../components/tasks/TaskCard';
+import TaskCardSkeleton from '../../components/ui/TaskCardSkeleton';
 import TaskModal from '../../components/tasks/TaskModal';
 import api from '../../api/axios';
 import ENDPOINTS from '../../api/endpoints';
@@ -145,8 +146,18 @@ export const TodayView: React.FC = () => {
         )}
 
         {isLoading ? (
-          <div className="py-12 flex justify-center">
-            <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 select-none" style={{ color: 'var(--text-muted)' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 animate-pulse" />
+                Loading Tasks...
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <TaskCardSkeleton key={i} />
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">

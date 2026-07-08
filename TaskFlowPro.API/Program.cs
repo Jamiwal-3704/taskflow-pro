@@ -8,9 +8,9 @@ using TaskFlowPro.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Database Connection (SQL Server)
+// 1. Database Connection (PostgreSQL / NeonDB)
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
 // 2. Identity Service configuration
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>

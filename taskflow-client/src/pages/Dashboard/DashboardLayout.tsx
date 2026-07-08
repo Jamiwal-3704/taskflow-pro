@@ -4,6 +4,7 @@ import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import { DynamicGridBackground } from '../../components/ui/DynamicGridBackground';
 import { GlassFilter } from '../../components/ui/liquid-glass';
+import RouteSkeleton from '../../components/ui/RouteSkeleton';
 
 export const DashboardLayout: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,7 +39,9 @@ export const DashboardLayout: React.FC = () => {
             />
           )}
 
-          <Outlet />
+          <React.Suspense fallback={<RouteSkeleton />}>
+            <Outlet />
+          </React.Suspense>
         </main>
       </div>
     </div>
