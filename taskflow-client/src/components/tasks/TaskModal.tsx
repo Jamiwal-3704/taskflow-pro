@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { TodoTask, TodoSubtask } from '../../types/task';
 import SubtaskItem from './SubtaskItem';
+import LineItemEditor from './LineItemEditor';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -31,16 +32,16 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Sync state values when task changes
+  // Sync state values only when modal opens or selected task changes
   React.useEffect(() => {
-    if (task) {
+    if (isOpen && task) {
       setTitle(task.title);
       setDescription(task.description || '');
       setPriority(task.priority);
       setDeadline(task.deadline ? task.deadline.substring(0, 16) : '');
       setPlannedDate(task.plannedDate ? task.plannedDate.substring(0, 10) : '');
     }
-  }, [task]);
+  }, [task?.id, isOpen]);
 
   if (!isOpen || !task) return null;
 
@@ -123,17 +124,16 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               />
             </div>
 
-            {/* Description */}
+            {/* Description / Checklist */}
             <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wider mb-2">Description</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter description notes..."
-                rows={3}
-                className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none resize-none glass-input"
-                disabled={isSaving}
-              />
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wider mb-2">Description / Routine</label>
+              <div className="bg-slate-50/50 dark:bg-slate-900/50 rounded-xl p-3 border border-slate-200/50 dark:border-slate-800">
+                <LineItemEditor 
+                  value={description}
+                  onChange={setDescription}
+                  disabled={isSaving}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

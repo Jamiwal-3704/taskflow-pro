@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React from 'react';
+import AvatarSelector from '../../components/ui/AvatarSelector';
 
 interface Step2Props {
   displayName: string;
@@ -17,29 +18,7 @@ export const Step2: React.FC<Step2Props> = ({
   onNext,
   onBack,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Live avatar letter extraction
-  const getAvatarLetter = () => {
-    const trimmed = displayName.trim();
-    return trimmed ? trimmed.charAt(0).toUpperCase() : '?';
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Mock File Upload Reader for local previews
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
-  };
+  // Removed old file input logic
 
   const handleNextSubmit = () => {
     if (!displayName.trim()) {
@@ -56,38 +35,12 @@ export const Step2: React.FC<Step2Props> = ({
         <p className="text-slate-400 text-xs mt-1.5">How would you like to be displayed in your workspace?</p>
       </div>
 
-      {/* Live Avatar Preview */}
-      <div className="flex flex-col items-center gap-3 py-4">
-        <div
-          onClick={triggerFileInput}
-          className="w-24 h-24 rounded-full border border-slate-800 bg-slate-950 flex items-center justify-center cursor-pointer relative group overflow-hidden shadow-inner select-none"
-        >
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
-          ) : (
-            <span className="text-4xl font-extrabold text-blue-400 tracking-tight transition-transform group-hover:scale-110">
-              {getAvatarLetter()}
-            </span>
-          )}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-semibold transition-opacity duration-200">
-            Change Photo
-          </div>
-        </div>
-
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="image/*"
-          className="hidden"
+      {/* Avatar Sticker Selector */}
+      <div className="py-4 text-left max-w-sm mx-auto">
+        <AvatarSelector 
+          selectedUrl={avatarUrl}
+          onSelect={setAvatarUrl}
         />
-        <button
-          onClick={triggerFileInput}
-          type="button"
-          className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
-        >
-          Upload Photo
-        </button>
       </div>
 
       <div className="max-w-xs mx-auto text-left">

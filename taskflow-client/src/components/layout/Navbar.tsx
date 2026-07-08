@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Menu, Search, HelpCircle, LogOut } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Menu, Search, Bell, HelpCircle, LogOut, Settings } from 'lucide-react';
 import axiosInstance from '../../api/axios';
 import ENDPOINTS from '../../api/endpoints';
 import type { TodoTask } from '../../types/task';
+import ProfileModal from './ProfileModal';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -13,6 +14,8 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TodoTask[]>([]);
@@ -204,6 +207,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             <div className="absolute right-0 top-full pt-2 w-44 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
               <div className="glass-panel rounded-xl shadow-2xl py-1 transform translate-y-1 group-hover:translate-y-0">
                 <button
+                  onClick={() => setIsProfileOpen(true)}
+                  className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--hover-bg)')}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+                >
+                  <Settings className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                  Profile Settings
+                </button>
+                <button
                   onClick={() => navigate('/dashboard/guide')}
                   className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
@@ -226,6 +239,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </div>
         </div>
       </div>
+
+      <ProfileModal 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+      />
     </header>
   );
 };

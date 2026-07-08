@@ -6,6 +6,7 @@ import NewListModal from '../lists/NewListModal';
 import type { TodoList } from '../../types/list';
 import { Sun, Moon, Plus, List } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import LiveClock from './LiveClock';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -212,6 +213,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
               <span>Dark</span>
             </button>
           </div>
+
+          {/* Live Clock Component */}
+          <LiveClock />
         </div>
       </aside>
 

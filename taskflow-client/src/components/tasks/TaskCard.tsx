@@ -116,9 +116,25 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         {/* Description Snippet */}
         {task.description && (
-          <p className="text-slate-650 dark:text-slate-400 text-[11px] leading-relaxed mt-1.5 line-clamp-2">
-            {task.description}
-          </p>
+          <div className="text-slate-650 dark:text-slate-400 text-[11px] leading-relaxed mt-1.5 line-clamp-2">
+            {(() => {
+              try {
+                const parsed = JSON.parse(task.description);
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].hasOwnProperty('text')) {
+                  return parsed.map((item: any, i: number) => (
+                    <span key={item.id} className={item.isCompleted ? 'line-through opacity-70' : ''}>
+                      {item.isCompleted ? '✓ ' : '• '}
+                      {item.text}
+                      {i < parsed.length - 1 ? '  ' : ''}
+                    </span>
+                  ));
+                }
+              } catch {
+                // Not JSON, render as normal text
+              }
+              return task.description;
+            })()}
+          </div>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { format, isSameDay, parseISO } from 'date-fns';
-import WeekStrip from '../../components/calendar/WeekStrip';
+import { Plus } from 'lucide-react';
+import MonthCalendar from '../../components/calendar/MonthCalendar';
 import TaskCard from '../../components/tasks/TaskCard';
 import TaskCardSkeleton from '../../components/ui/TaskCardSkeleton';
 import TaskModal from '../../components/tasks/TaskModal';
@@ -12,6 +13,7 @@ import type { TodoList } from '../../types/list';
 export const DayWiseView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [tasks, setTasks] = useState<TodoTask[]>([]);
+  const [lists, setLists] = useState<TodoList[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TodoTask | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,10 +24,11 @@ export const DayWiseView: React.FC = () => {
     try {
       // 1. Fetch all user lists
       const listsResponse = await api.get<TodoList[]>(ENDPOINTS.LISTS.BASE);
-      const lists = listsResponse.data;
+      const fetchedLists = listsResponse.data;
+      setLists(fetchedLists);
 
       // 2. Fetch tasks for each list in parallel
-      const tasksPromises = lists.map((list) =>
+      const tasksPromises = fetchedLists.map((list) =>
         api.get<TodoTask[]>(ENDPOINTS.TASKS.BASE(list.id)).then((res) => res.data)
       );
 
@@ -100,18 +103,48 @@ export const DayWiseView: React.FC = () => {
         </p>
       </div>
 
-      {/* Week Calendar Strip */}
-      <WeekStrip
+      {/* Full Month Calendar View */}
+      <MonthCalendar
         selectedDate={selectedDate}
         onChangeDate={setSelectedDate}
-        streakDates={streakDates}
+        tasks={tasks}
       />
 
-      {/* Date Header Title */}
-      <div className="pt-2">
+      {/* Date Header Title & Quick Add */}
+      <div className="pt-2 flex items-center justify-between">
         <h3 className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
           Planned Tasks for {format(selectedDate, 'EEEE, MMMM d, yyyy')}
         </h3>
+        
+        {lists.length > 0 && (
+          <button
+            onClick={async () => {
+              // Create a quick temporary task shell to open in the modal
+              // The backend expects listId, so we will create it first then open modal
+              setIsLoading(true);
+              try {
+                const listId = lists[0].id; // Default to first list
+                const newTask = {
+                  title: 'New Planned Task',
+                  plannedDate: selectedDate.toISOString(),
+                  priority: 0
+                };
+                const res = await api.post<TodoTask>(ENDPOINTS.TASKS.BASE(listId), newTask);
+                setTasks(prev => [...prev, res.data]);
+                setSelectedTask(res.data);
+                setIsModalOpen(true);
+              } catch (err) {
+                console.error(err);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Task
+          </button>
+        )}
       </div>
 
       {/* Loading Indicator */}
