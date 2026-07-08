@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
@@ -14,6 +15,7 @@ namespace TaskFlowPro.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("GeneralApi")]
     public class WorkoutsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -136,6 +138,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost("sessions")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> CreateSession([FromBody] WorkoutSessionCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -174,6 +177,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost("sessions/{sessionId}/exercises")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> AddExerciseToSession(Guid sessionId, [FromBody] WorkoutLoggedExerciseCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -227,6 +231,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpDelete("sessions/exercises/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> RemoveExerciseFromSession(Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -252,6 +257,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost("exercises/{loggedExerciseId}/logs")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> AddSetLog(Guid loggedExerciseId, [FromBody] WorkoutSetLogCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -294,6 +300,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("logs/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> UpdateSetLog(Guid id, [FromBody] WorkoutSetLogUpdateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -331,6 +338,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpDelete("logs/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> DeleteSetLog(Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

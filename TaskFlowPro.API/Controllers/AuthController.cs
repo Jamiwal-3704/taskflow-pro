@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace TaskFlowPro.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("AuthPolicy")]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;

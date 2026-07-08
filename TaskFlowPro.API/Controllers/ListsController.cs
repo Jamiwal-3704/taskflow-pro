@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
@@ -14,6 +15,7 @@ namespace TaskFlowPro.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("GeneralApi")]
     public class ListsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -51,6 +53,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> CreateList([FromBody] ListCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -112,6 +115,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> UpdateList(Guid id, [FromBody] ListUpdateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -156,6 +160,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> DeleteList(Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -179,6 +184,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("reorder")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> ReorderLists([FromBody] ListReorderDto[] dtos)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

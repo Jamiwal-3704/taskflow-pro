@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.Models;
 
@@ -58,6 +60,54 @@ builder.Services.AddCors(opt => opt.AddPolicy("ReactApp", p =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// 6. Rate Limiting Setup (DDoS Mitigation Layer 2)
+builder.Services.AddRateLimiter(options =>
+{
+    // Return 429 Too Many Requests when limit exceeded
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // POLICY 1 — General API (100 requests per minute per IP)
+    options.AddSlidingWindowLimiter("GeneralApi", config =>
+    {
+        config.PermitLimit = 100;
+        config.Window = TimeSpan.FromMinutes(1);
+        config.SegmentsPerWindow = 6; // checks every 10 seconds
+        config.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        config.QueueLimit = 5;
+    });
+
+    // POLICY 2 — Auth endpoints (stricter — 5 attempts per minute)
+    // Prevents brute force login attacks
+    options.AddFixedWindowLimiter("AuthPolicy", config =>
+    {
+        config.PermitLimit = 5;
+        config.Window = TimeSpan.FromMinutes(1);
+        config.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        config.QueueLimit = 0; // no queuing — reject immediately
+    });
+
+    // POLICY 3 — Task creation (20 tasks per minute per user)
+    options.AddFixedWindowLimiter("WritePolicy", config =>
+    {
+        config.PermitLimit = 20;
+        config.Window = TimeSpan.FromMinutes(1);
+        config.QueueLimit = 2;
+    });
+
+    // Custom rejection response — tells client when to retry
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.Headers["Retry-After"] = "60";
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            error = "Too many requests",
+            message = "You have exceeded the rate limit. Please wait 60 seconds.",
+            retryAfter = 60
+        }, cancellationToken);
+    };
+});
+
 var app = builder.Build();
 
 // Configure request pipelines
@@ -70,6 +120,7 @@ app.UseCors("ReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter(); // ← ADD THIS LINE HERE
 
 app.MapControllers();
 

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
@@ -14,6 +15,7 @@ namespace TaskFlowPro.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api")]
+    [EnableRateLimiting("GeneralApi")]
     public class TasksController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -46,6 +48,7 @@ namespace TaskFlowPro.API.Controllers
                     AssigneeId = t.AssigneeId,
                     Title = t.Title,
                     Description = t.Description,
+                    ColorHex = t.ColorHex,
                     Status = t.Status,
                     Priority = t.Priority,
                     IsImportant = t.IsImportant,
@@ -71,6 +74,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost("lists/{listId}/tasks")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> CreateTask(Guid listId, [FromBody] TaskCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -93,6 +97,7 @@ namespace TaskFlowPro.API.Controllers
                 ListId = listId,
                 Title = dto.Title,
                 Description = dto.Description,
+                ColorHex = dto.ColorHex,
                 Priority = dto.Priority,
                 Status = 0, // 0 = Pending
                 CreatedAt = DateTime.UtcNow,
@@ -110,6 +115,7 @@ namespace TaskFlowPro.API.Controllers
                 ListId = task.ListId,
                 Title = task.Title,
                 Description = task.Description,
+                ColorHex = task.ColorHex,
                 Status = task.Status,
                 Priority = task.Priority,
                 IsImportant = task.IsImportant,
@@ -123,6 +129,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("tasks/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> UpdateTask(Guid id, [FromBody] TaskUpdateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -141,6 +148,7 @@ namespace TaskFlowPro.API.Controllers
 
             task.Title = dto.Title;
             task.Description = dto.Description;
+            task.ColorHex = dto.ColorHex;
             task.Priority = dto.Priority;
             task.Status = dto.Status;
             task.IsImportant = dto.IsImportant;
@@ -153,9 +161,9 @@ namespace TaskFlowPro.API.Controllers
             return Ok(new TaskDto
             {
                 Id = task.Id,
-                ListId = task.ListId,
                 Title = task.Title,
                 Description = task.Description,
+                ColorHex = task.ColorHex,
                 Status = task.Status,
                 Priority = task.Priority,
                 IsImportant = task.IsImportant,
@@ -170,6 +178,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPatch("tasks/{id}/status")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> PatchStatus(Guid id, [FromBody] TaskStatusPatchDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -206,20 +215,17 @@ namespace TaskFlowPro.API.Controllers
             task.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            return Ok(new TaskDto
+            return Ok(new
             {
-                Id = task.Id,
-                ListId = task.ListId,
-                Title = task.Title,
                 Status = task.Status,
                 WorkStartedAt = task.WorkStartedAt,
                 CompletedAt = task.CompletedAt,
-                Deadline = task.Deadline,
                 TimePerformanceMinutes = task.TimePerformanceMinutes
             });
         }
 
         [HttpPatch("tasks/{id}/important")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> PatchImportant(Guid id, [FromBody] TaskImportancePatchDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -249,6 +255,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpDelete("tasks/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> DeleteTask(Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -283,9 +290,9 @@ namespace TaskFlowPro.API.Controllers
                 {
                     Id = t.Id,
                     ListId = t.ListId,
-                    AssigneeId = t.AssigneeId,
                     Title = t.Title,
                     Description = t.Description,
+                    ColorHex = t.ColorHex,
                     Status = t.Status,
                     Priority = t.Priority,
                     IsImportant = t.IsImportant,

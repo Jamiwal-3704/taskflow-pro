@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskFlowPro.API.Data;
 using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
@@ -14,6 +15,7 @@ namespace TaskFlowPro.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api")]
+    [EnableRateLimiting("GeneralApi")]
     public class SubTasksController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -24,6 +26,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPost("tasks/{taskId}/subtasks")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> CreateSubTask(Guid taskId, [FromBody] SubTaskCreateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -66,6 +69,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("subtasks/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> UpdateSubTask(Guid id, [FromBody] SubTaskUpdateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -100,6 +104,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpDelete("subtasks/{id}")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> DeleteSubTask(Guid id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

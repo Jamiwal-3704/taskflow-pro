@@ -11,6 +11,7 @@ namespace TaskFlowPro.API.Models
         public string? AssigneeId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
+        public string? ColorHex { get; set; } // Custom color for the task card
         public int Status { get; set; } = 0;  // 0 = Pending, 1 = Working, 2 = Complete
         public int Priority { get; set; } = 0; // 0 = None, 1 = Low, 2 = Med, 3 = High, 4 = Critical
         public bool IsImportant { get; set; } = false;

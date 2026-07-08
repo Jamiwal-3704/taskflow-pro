@@ -14,6 +14,7 @@ namespace TaskFlowPro.API.Data
         public DbSet<TodoTask> TodoTasks { get; set; }
         public DbSet<TodoSubtask> TodoSubtasks { get; set; }
         public DbSet<UserListPreference> UserListPreferences { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
         // Workout Tracker Tables
         public DbSet<WorkoutTemplate> WorkoutTemplates { get; set; }

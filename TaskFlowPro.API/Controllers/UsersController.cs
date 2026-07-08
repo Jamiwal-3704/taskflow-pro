@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.RateLimiting;
 using TaskFlowPro.API.Data;
+using TaskFlowPro.API.DTOs;
 using TaskFlowPro.API.Models;
 
 namespace TaskFlowPro.API.Controllers
@@ -12,6 +14,7 @@ namespace TaskFlowPro.API.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("GeneralApi")]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
@@ -31,6 +34,7 @@ namespace TaskFlowPro.API.Controllers
         }
 
         [HttpPut("profile")]
+        [EnableRateLimiting("WritePolicy")]
         public async Task<IActionResult> UpdateProfile([FromBody] ProfileUpdateDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
