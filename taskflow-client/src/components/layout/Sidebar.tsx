@@ -42,6 +42,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true }) => {
     { name: 'Day Planner', path: '/dashboard/daywise', icon: '🗓️' },
     { name: 'Important', path: '/dashboard/important', icon: '⭐' },
     { name: 'Tour Guide', path: '/dashboard/guide', icon: '💡' },
+    { name: 'Feedback', path: '/dashboard/feedback', icon: '💬' },
+    { name: 'About Developer', path: '/dashboard/about', icon: '👨‍💻' },
   ];
 
   const isRouteActive = (path: string) => location.pathname === path;

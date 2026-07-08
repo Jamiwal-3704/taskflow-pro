@@ -17,6 +17,10 @@ export const DayWiseView: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTask, setSelectedTask] = useState<TodoTask | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  // Helper to safely convert local date to ISO string without timezones shifting the day backwards
+  const getSafeISO = (date: Date) => format(date, "yyyy-MM-dd'T'12:00:00.000'Z'");
 
   // Fetch all tasks across all lists to filter by date
   const fetchAllTasks = useCallback(async () => {
@@ -52,9 +56,7 @@ export const DayWiseView: React.FC = () => {
     return isSameDay(parseISO(task.plannedDate), selectedDate);
   });
 
-  const streakDates = tasks
-    .filter((t) => t.plannedDate)
-    .map((t) => t.plannedDate as string);
+
 
   const handleStatusChange = async (taskId: string, newStatus: number) => {
     try {
@@ -93,6 +95,60 @@ export const DayWiseView: React.FC = () => {
     }
   };
 
+  const handleMoveTask = async (taskId: string, newDate: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    try {
+      const updatedData = {
+        title: task.title,
+        description: task.description,
+        colorHex: task.colorHex,
+        priority: task.priority,
+        isImportant: task.isImportant,
+        deadline: task.deadline,
+        plannedDate: newDate ? new Date(newDate).toISOString() : null,
+        status: task.status,
+      };
+      const response = await api.put<TodoTask>(ENDPOINTS.TASKS.DETAIL(taskId), updatedData);
+      setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, ...response.data } : t)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleCopyTask = async (task: TodoTask, newDate: string) => {
+    try {
+      const newData = {
+        title: task.title,
+        description: task.description,
+        colorHex: task.colorHex,
+        priority: task.priority,
+        isImportant: task.isImportant,
+        deadline: task.deadline,
+        plannedDate: newDate ? new Date(newDate).toISOString() : null,
+      };
+      const response = await api.post<TodoTask>(ENDPOINTS.TASKS.BASE(task.listId), newData);
+      setTasks((prev) => [...prev, response.data]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDropTask = (taskId: string, targetDate: Date) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const safeDateISO = getSafeISO(targetDate);
+
+    if (task.deadline && new Date(task.deadline) < targetDate) {
+      setSelectedTask({ ...task, plannedDate: safeDateISO });
+      setModalError('Due date cannot be earlier than the planned date! Please update the deadline to save.');
+      setIsModalOpen(true);
+    } else {
+      handleMoveTask(taskId, safeDateISO);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -108,6 +164,7 @@ export const DayWiseView: React.FC = () => {
         selectedDate={selectedDate}
         onChangeDate={setSelectedDate}
         tasks={tasks}
+        onDropTask={handleDropTask}
       />
 
       {/* Date Header Title & Quick Add */}
@@ -126,7 +183,7 @@ export const DayWiseView: React.FC = () => {
                 const listId = lists[0].id; // Default to first list
                 const newTask = {
                   title: 'New Planned Task',
-                  plannedDate: selectedDate.toISOString(),
+                  plannedDate: getSafeISO(selectedDate),
                   priority: 0
                 };
                 const res = await api.post<TodoTask>(ENDPOINTS.TASKS.BASE(listId), newTask);
@@ -162,8 +219,16 @@ export const DayWiseView: React.FC = () => {
               task={task}
               onStatusChange={handleStatusChange}
               onImportantChange={handleImportantChange}
+              onMoveTask={handleMoveTask}
+              onCopyTask={handleCopyTask}
+              draggable={true}
+              onDragStart={(e) => {
+                e.dataTransfer.setData('taskId', task.id);
+                e.dataTransfer.effectAllowed = 'move';
+              }}
               onCardClick={(t) => {
                 setSelectedTask(t);
+                setModalError(null);
                 setIsModalOpen(true);
               }}
             />
@@ -184,9 +249,10 @@ export const DayWiseView: React.FC = () => {
       {/* Task Edit Modal */}
       <TaskModal
         isOpen={isModalOpen}
-        task={selectedTask ? tasks.find((t) => t.id === selectedTask.id) || null : null}
+        task={selectedTask}
         onClose={() => {
           setIsModalOpen(false);
+          setModalError(null);
           setSelectedTask(null);
         }}
         onUpdate={handleUpdateTask}
@@ -214,6 +280,7 @@ export const DayWiseView: React.FC = () => {
             prev.map((t) => (t.id === tid ? { ...t, subTasks: (t.subTasks || []).filter((s) => s.id !== subId) } : t))
           );
         }}
+        initialError={modalError}
       />
     </div>
   );

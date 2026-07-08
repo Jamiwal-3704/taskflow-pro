@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu, Search, Bell, HelpCircle, LogOut, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, Search, HelpCircle, LogOut, Settings } from 'lucide-react';
 import axiosInstance from '../../api/axios';
 import ENDPOINTS from '../../api/endpoints';
 import type { TodoTask } from '../../types/task';
@@ -14,7 +14,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');

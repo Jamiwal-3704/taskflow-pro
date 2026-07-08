@@ -6,7 +6,6 @@ import {
   startOfMonth, 
   endOfMonth, 
   eachDayOfInterval, 
-  isSameMonth, 
   isSameDay, 
   isToday 
 } from 'date-fns';
@@ -17,14 +16,17 @@ interface MonthCalendarProps {
   selectedDate: Date;
   onChangeDate: (date: Date) => void;
   tasks: TodoTask[];
+  onDropTask?: (taskId: string, targetDate: Date) => void;
 }
 
 export const MonthCalendar: React.FC<MonthCalendarProps> = ({
   selectedDate,
   onChangeDate,
-  tasks
+  tasks,
+  onDropTask
 }) => {
   const [currentMonth, setCurrentMonth] = React.useState(startOfMonth(selectedDate));
+  const [dragOverDate, setDragOverDate] = React.useState<string | null>(null);
 
   const daysInMonth = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -83,9 +85,23 @@ export const MonthCalendar: React.FC<MonthCalendarProps> = ({
             <button
               key={day.toISOString()}
               onClick={() => onChangeDate(day)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverDate(day.toISOString());
+              }}
+              onDragLeave={() => setDragOverDate(null)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOverDate(null);
+                const taskId = e.dataTransfer.getData('taskId');
+                if (taskId && onDropTask) {
+                  onDropTask(taskId, day);
+                }
+              }}
               className={`relative flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 cursor-pointer min-h-[44px]
                 ${selected ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105 z-10' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'}
                 ${today && !selected ? 'text-blue-500 font-bold border border-blue-500/30' : ''}
+                ${dragOverDate === day.toISOString() ? 'border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-900/30 scale-110 z-20' : ''}
               `}
             >
               <span className="text-sm font-semibold">{format(day, 'd')}</span>

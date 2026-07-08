@@ -12,6 +12,7 @@ export interface TodoTask {
   assigneeId: string | null;
   title: string;
   description: string | null;
+  colorHex?: string | null; // Optional custom color code for the task
   status: number;  // 0 = Pending, 1 = Working, 2 = Complete
   priority: number; // 0 = None, 1 = Low, 2 = Med, 3 = High, 4 = Critical
   isImportant: boolean;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { TodoTask } from '../../types/task';
 import { format, parseISO } from 'date-fns';
 
@@ -9,6 +9,8 @@ interface TaskCardProps {
   onCardClick: (task: TodoTask) => void;
   draggable?: boolean;
   onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onMoveTask?: (taskId: string, newDate: string) => void;
+  onCopyTask?: (task: TodoTask, newDate: string) => void;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -18,7 +20,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onCardClick,
   draggable,
   onDragStart,
+  onMoveTask,
+  onCopyTask,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   // Format dates: [DD/MM/YY | HH:MM PM]
   const formatTimestamp = (dateStr: string) => {
     try {
@@ -93,6 +98,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       onDragStart={onDragStart}
       onClick={() => onCardClick(task)}
       className={`p-4 glass-card border ${getBorderColor()} rounded-xl cursor-pointer flex flex-col justify-between gap-3 shadow-md transition-all hover:scale-[1.01] ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      style={task.colorHex ? { 
+        borderColor: task.colorHex,
+        boxShadow: `0 4px 20px -2px ${task.colorHex}30, inset 0 0 10px -5px ${task.colorHex}20` 
+      } : undefined}
     >
       <div>
         {/* Title and Star */}
@@ -100,18 +109,72 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <h4 className="font-bold text-slate-800 dark:text-slate-100 text-sm leading-tight truncate max-w-[85%]">
             {task.title}
           </h4>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onImportantChange(task.id, !task.isImportant);
-            }}
-            type="button"
-            className={`text-sm cursor-pointer hover:scale-120 transition-transform ${
-              task.isImportant ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'text-slate-400 dark:text-slate-600'
-            }`}
-          >
-            ★
-          </button>
+          <div className="flex items-center gap-2 relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onImportantChange(task.id, !task.isImportant);
+              }}
+              type="button"
+              className={`text-sm cursor-pointer hover:scale-120 transition-transform ${
+                task.isImportant ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'text-slate-400 dark:text-slate-600'
+              }`}
+            >
+              ★
+            </button>
+            {(onMoveTask || onCopyTask) && (
+              <div className="relative">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
+                  className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 px-1 font-bold"
+                >
+                  ⋮
+                </button>
+                {menuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[5]" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); }} />
+                    <div 
+                      className="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-10 overflow-hidden text-xs"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {onMoveTask && (
+                        <label className="relative block w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer text-slate-700 dark:text-slate-200">
+                          Move to Date...
+                          <input 
+                            type="date" 
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                onMoveTask(task.id, e.target.value);
+                                setMenuOpen(false);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
+                      {onCopyTask && (
+                        <label className="relative block w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer text-slate-700 dark:text-slate-200">
+                          Copy to Date...
+                          <input 
+                            type="date" 
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                onCopyTask(task, e.target.value);
+                                setMenuOpen(false);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Description Snippet */}

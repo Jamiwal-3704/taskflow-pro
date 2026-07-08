@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Circle, CheckCircle2, GripVertical, X } from 'lucide-react';
+import { Circle, CheckCircle2, X } from 'lucide-react';
 
 export interface LineItem {
   id: string;
@@ -15,7 +15,7 @@ interface LineItemEditorProps {
 
 export const LineItemEditor: React.FC<LineItemEditorProps> = ({ value, onChange, disabled }) => {
   const [items, setItems] = useState<LineItem[]>([]);
-  const [isLegacyText, setIsLegacyText] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -27,6 +27,9 @@ export const ENDPOINTS = {
     REMOVE_EXERCISE: (loggedExerciseId: string) => `/workouts/sessions/exercises/${loggedExerciseId}`,
     SET_LOGS: (loggedExerciseId: string) => `/workouts/exercises/${loggedExerciseId}/logs`,
     SET_LOG_DETAIL: (logId: string) => `/workouts/logs/${logId}`,
-  }
+  },
+  FEEDBACK: {
+    BASE: '/Feedback',
+  },
 };
 export default ENDPOINTS;

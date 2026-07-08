@@ -10,8 +10,9 @@ interface TaskModalProps {
   onUpdate: (id: string, updatedData: Partial<TodoTask>) => Promise<any>;
   onDelete: (id: string) => Promise<void>;
   onCreateSubtask: (taskId: string, title: string) => Promise<any>;
-  onUpdateSubtask: (subTaskId: string, updatedData: Partial<TodoSubtask>) => Promise<any>;
+  onUpdateSubtask: (subTaskId: string, updatedData: any) => Promise<any>;
   onDeleteSubtask: (taskId: string, subTaskId: string) => Promise<void>;
+  initialError?: string | null;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -23,14 +24,28 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onCreateSubtask,
   onUpdateSubtask,
   onDeleteSubtask,
+  initialError,
 }) => {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [priority, setPriority] = useState(task?.priority || 0);
   const [deadline, setDeadline] = useState(task?.deadline ? task.deadline.substring(0, 16) : '');
   const [plannedDate, setPlannedDate] = useState(task?.plannedDate ? task.plannedDate.substring(0, 10) : '');
+  const [colorHex, setColorHex] = useState(task?.colorHex || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const PRESET_COLORS = [
+    { value: '', label: 'None' },
+    { value: '#ef4444', label: 'Red' },
+    { value: '#f97316', label: 'Orange' },
+    { value: '#eab308', label: 'Yellow' },
+    { value: '#22c55e', label: 'Green' },
+    { value: '#3b82f6', label: 'Blue' },
+    { value: '#a855f7', label: 'Purple' },
+    { value: '#ec4899', label: 'Pink' },
+  ];
 
   // Sync state values only when modal opens or selected task changes
   React.useEffect(() => {
@@ -40,8 +55,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setPriority(task.priority);
       setDeadline(task.deadline ? task.deadline.substring(0, 16) : '');
       setPlannedDate(task.plannedDate ? task.plannedDate.substring(0, 10) : '');
+      setColorHex(task.colorHex || '');
+      setErrorMsg(initialError || null);
     }
-  }, [task?.id, isOpen]);
+  }, [task?.id, isOpen, initialError]);
 
   if (!isOpen || !task) return null;
 
@@ -55,12 +72,21 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     e.preventDefault();
     if (!title.trim()) return;
 
+    if (deadline && plannedDate) {
+      if (new Date(deadline) < new Date(plannedDate)) {
+        setErrorMsg('Due date cannot be earlier than the planned date!');
+        return;
+      }
+    }
+    setErrorMsg(null);
+
     setIsSaving(true);
     try {
       await onUpdate(task.id, {
         title,
         description: description || null,
         priority,
+        colorHex: colorHex || null,
         deadline: deadline ? new Date(deadline).toISOString() : null,
         plannedDate: plannedDate ? new Date(plannedDate).toISOString() : null,
       });
@@ -124,6 +150,25 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               />
             </div>
 
+            {/* Color Picker */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wider mb-2">Card Color</label>
+              <div className="flex items-center gap-2 flex-wrap">
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() => setColorHex(c.value)}
+                    className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${colorHex === c.value ? 'border-slate-800 dark:border-slate-100 scale-125' : 'border-transparent hover:scale-110'}`}
+                    style={{ backgroundColor: c.value || 'var(--hover-bg)' }}
+                    title={c.label}
+                  >
+                    {!c.value && <span className="text-[10px] text-slate-500 flex items-center justify-center h-full">✕</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Description / Checklist */}
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wider mb-2">Description / Routine</label>
@@ -161,7 +206,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   value={plannedDate}
                   min={minDate}
                   onChange={(e) => setPlannedDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs focus:outline-none glass-input [color-scheme:light] dark:[color-scheme:dark]"
+                  disabled={task.status === 2}
+                  className={`w-full px-3 py-2 rounded-xl text-xs focus:outline-none glass-input [color-scheme:light] dark:[color-scheme:dark] ${task.status === 2 ? 'opacity-60 cursor-not-allowed' : ''}`}
                 />
               </div>
             </div>
@@ -173,9 +219,16 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 type="datetime-local"
                 value={deadline}
                 min={minDateTime}
-                onChange={(e) => setDeadline(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-xs focus:outline-none glass-input [color-scheme:light] dark:[color-scheme:dark]"
+                onChange={(e) => {
+                  setDeadline(e.target.value);
+                  setErrorMsg(null);
+                }}
+                disabled={task.status === 2}
+                className={`w-full px-4 py-2.5 rounded-xl text-xs focus:outline-none glass-input [color-scheme:light] dark:[color-scheme:dark] ${task.status === 2 ? 'opacity-60 cursor-not-allowed' : ''} ${errorMsg ? 'border-rose-500 bg-rose-500/5 text-rose-600' : ''}`}
               />
+              {errorMsg && (
+                <p className="text-xs text-rose-500 mt-2 font-semibold">⚠️ {errorMsg}</p>
+              )}
             </div>
 
             {/* Actions */}

@@ -71,8 +71,6 @@
     inset 0 1px 0 var(--glass-highlight),
     inset 0 -1px 0 var(--glass-shine);
   transition: background 0.4s ease, border-color 0.4s ease;
-  will-change: transform, backdrop-filter;
-  transform: translateZ(0); /* Hardware acceleration to stop scroll jitter */
 }
 
 /* ============================================
@@ -88,8 +86,6 @@
     inset 0 1px 0 var(--glass-highlight),
     inset 0 -1px 0 rgba(0, 0, 0, 0.04);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, backdrop-filter;
-  transform: translateZ(0); /* GPU Acceleration */
 }
 
 .glass-card:hover {
@@ -239,7 +235,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(255, 255, 255, 0.8) 360deg);
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 180deg, rgba(0, 0, 0, 0.8) 360deg);
   animation: spin-slow 3s linear infinite;
   z-index: 0;
 }

@@ -14,6 +14,8 @@ const DayWiseView = lazy(() => import('./pages/DayWise/DayWiseView').then(module
 const ImportantView = lazy(() => import('./pages/Important/ImportantView').then(module => ({ default: module.ImportantView })));
 const GuideView = lazy(() => import('./pages/Guide/GuideView').then(module => ({ default: module.GuideView })));
 const ListPage = lazy(() => import('./pages/List/ListPage').then(module => ({ default: module.ListPage })));
+const FeedbackView = lazy(() => import('./pages/Feedback/FeedbackView').then(module => ({ default: module.FeedbackView })));
+const AboutView = lazy(() => import('./pages/About/AboutView').then(module => ({ default: module.AboutView })));
 
 // Private Route Guard Component
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -67,6 +69,8 @@ function App() {
                 <Route path="daywise" element={<DayWiseView />} />
                 <Route path="important" element={<ImportantView />} />
                 <Route path="guide" element={<GuideView />} />
+                <Route path="feedback" element={<FeedbackView />} />
+                <Route path="about" element={<AboutView />} />
                 <Route path="list/:listId" element={<ListPage />} />
               </Route>
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
