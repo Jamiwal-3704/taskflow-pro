@@ -29,14 +29,12 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({ value, onChange,
       const parsed = JSON.parse(value);
       if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].hasOwnProperty('text')) {
         setItems(parsed);
-        setIsLegacyText(false);
       } else {
         throw new Error("Not a line item array");
       }
     } catch {
       // Legacy raw text - convert to single item
       setItems([{ id: crypto.randomUUID(), text: value, isCompleted: false }]);
-      setIsLegacyText(true);
     }
   }, []);
 

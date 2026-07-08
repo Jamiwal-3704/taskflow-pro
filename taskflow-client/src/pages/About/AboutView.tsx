@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Code2, Globe, Mail, Phone, Shield, Zap, Layers, Server, LayoutTemplate, ShieldAlert, Cpu, Orbit, Database, Briefcase } from 'lucide-react';
+import { User, Code2, Mail, Phone, Shield, Zap, Layers, Server, LayoutTemplate, ShieldAlert, Cpu, Orbit, Database, Briefcase } from 'lucide-react';
 
 export const AboutView: React.FC = () => {
   return (

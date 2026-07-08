@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Lenis from 'lenis';
-import type { TodoTask, TodoSubtask } from '../../types/task';
+import type { TodoTask } from '../../types/task';
 import SubtaskItem from './SubtaskItem';
 import LineItemEditor from './LineItemEditor';
 
