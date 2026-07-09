@@ -10,6 +10,33 @@ const validateEmail = (v: string): string => {
   return '';
 };
 
+// Helper to extract clean error messages from C# API responses
+const extractErrorMessage = (error: any): string => {
+  if (!error.response) return 'Unable to connect to the server. Please verify your connection.';
+  const data = error.response.data;
+  if (typeof data === 'string') return data;
+  if (Array.isArray(data)) {
+    return data.map((d: any) => d.description || d.message || JSON.stringify(d)).join('\n');
+  }
+  if (data && typeof data === 'object') {
+    if (data.errors && typeof data.errors === 'object') {
+      const messages: string[] = [];
+      Object.keys(data.errors).forEach((key) => {
+        const val = data.errors[key];
+        if (Array.isArray(val)) {
+          messages.push(...val);
+        } else if (typeof val === 'string') {
+          messages.push(val);
+        }
+      });
+      if (messages.length > 0) return messages.join('\n');
+    }
+    if (data.message) return data.message;
+    if (data.title) return data.title;
+  }
+  return 'An unexpected error occurred. Please try again.';
+};
+
 export const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -17,6 +44,7 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const emailError = useMemo(() => (touched.email ? validateEmail(email) : ''), [email, touched.email]);
 
@@ -33,15 +61,16 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError(null);
     setTouched({ email: true, password: true });
 
     if (!email.trim() || !password) {
-      toast.error('Please enter both email and password.');
+      setApiError('Please enter both email and password.');
       return;
     }
     const err = validateEmail(email);
     if (err) {
-      toast.error(err);
+      setApiError(err);
       return;
     }
 
@@ -52,8 +81,8 @@ export const Login: React.FC = () => {
       navigate('/dashboard');
     } catch (error: any) {
       console.error(error);
-      const msg = error.response?.data || 'Invalid email or password.';
-      toast.error(typeof msg === 'string' ? msg : 'Login failed.');
+      const cleanMsg = extractErrorMessage(error);
+      setApiError(cleanMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -85,6 +114,15 @@ export const Login: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 relative" noValidate>
+          {apiError && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-200 p-3.5 rounded-xl text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300 shadow-[0_0_15px_rgba(239,68,68,0.05)]">
+              <span className="text-red-400 mt-0.5 shrink-0 text-sm">⚠️</span>
+              <div className="flex-1 whitespace-pre-line leading-relaxed font-medium">
+                {apiError}
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
             <input

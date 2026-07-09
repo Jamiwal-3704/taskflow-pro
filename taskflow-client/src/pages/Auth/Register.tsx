@@ -35,6 +35,33 @@ const getPasswordChecks = (pw: string): PwdCheck[] => [
 
 const allPasswordChecksPassed = (pw: string): boolean => getPasswordChecks(pw).every((c) => c.passed);
 
+// Helper to extract clean error messages from C# API responses
+const extractErrorMessage = (error: any): string => {
+  if (!error.response) return 'Unable to connect to the server. Please verify your connection.';
+  const data = error.response.data;
+  if (typeof data === 'string') return data;
+  if (Array.isArray(data)) {
+    return data.map((d: any) => d.description || d.message || JSON.stringify(d)).join('\n');
+  }
+  if (data && typeof data === 'object') {
+    if (data.errors && typeof data.errors === 'object') {
+      const messages: string[] = [];
+      Object.keys(data.errors).forEach((key) => {
+        const val = data.errors[key];
+        if (Array.isArray(val)) {
+          messages.push(...val);
+        } else if (typeof val === 'string') {
+          messages.push(val);
+        }
+      });
+      if (messages.length > 0) return messages.join('\n');
+    }
+    if (data.message) return data.message;
+    if (data.title) return data.title;
+  }
+  return 'An unexpected error occurred. Please try again.';
+};
+
 // ── Component ───────────────────────────────────────────────────
 export const Register: React.FC = () => {
   const { register } = useAuth();
@@ -45,6 +72,7 @@ export const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // Track which fields have been touched (blurred at least once)
   const [touched, setTouched] = useState({ name: false, email: false, password: false, confirm: false });
@@ -93,28 +121,29 @@ export const Register: React.FC = () => {
   // ── Submit handler ──
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError(null);
 
     // Force touch all fields
     setTouched({ name: true, email: true, password: true, confirm: true });
 
     if (!displayName.trim() || !email.trim() || !password || !confirmPassword) {
-      toast.error('All fields are required.');
+      setApiError('All fields are required.');
       return;
     }
     if (validateDisplayName(displayName)) {
-      toast.error(validateDisplayName(displayName));
+      setApiError(validateDisplayName(displayName));
       return;
     }
     if (validateEmail(email)) {
-      toast.error(validateEmail(email));
+      setApiError(validateEmail(email));
       return;
     }
     if (!pwdAllPassed) {
-      toast.error('Password does not meet all requirements.');
+      setApiError('Password does not meet all complexity requirements.');
       return;
     }
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match.');
+      setApiError('Passwords do not match.');
       return;
     }
 
@@ -125,12 +154,8 @@ export const Register: React.FC = () => {
       navigate('/onboarding');
     } catch (error: any) {
       console.error(error);
-      const errors = error.response?.data;
-      if (Array.isArray(errors)) {
-        errors.forEach((err: any) => toast.error(err.description || 'Registration failed.'));
-      } else {
-        toast.error(typeof errors === 'string' ? errors : 'Registration failed.');
-      }
+      const cleanMsg = extractErrorMessage(error);
+      setApiError(cleanMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -162,6 +187,15 @@ export const Register: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 relative" noValidate>
+          {apiError && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-200 p-3.5 rounded-xl text-xs flex items-start gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300 shadow-[0_0_15px_rgba(239,68,68,0.05)]">
+              <span className="text-red-400 mt-0.5 shrink-0 text-sm">⚠️</span>
+              <div className="flex-1 whitespace-pre-line leading-relaxed font-medium">
+                {apiError}
+              </div>
+            </div>
+          )}
+
           {/* Display Name */}
           <div>
             <label className="block text-xs font-semibold !text-slate-300 uppercase tracking-wider mb-2">Display Name</label>
