@@ -27,6 +27,76 @@ export const ListPage: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<TodoTask | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Mobile/Touch Drag and Drop states for Kanban columns
+  const [touchDragTaskId, setTouchDragTaskId] = useState<string | null>(null);
+  const [touchOverColumn, setTouchOverColumn] = useState<number | null>(null);
+
+  // Prevent default scroll behavior when actively dragging on touch devices
+  useEffect(() => {
+    if (!touchDragTaskId) return;
+
+    const preventDefault = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+
+    window.addEventListener('touchmove', preventDefault, { passive: false });
+    return () => {
+      window.removeEventListener('touchmove', preventDefault);
+    };
+  }, [touchDragTaskId]);
+
+  const handleTouchStart = (taskId: string, e: React.TouchEvent) => {
+    // Start a 250ms long-press timer to initiate dragging
+    const timer = setTimeout(() => {
+      setTouchDragTaskId(taskId);
+      if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback feedback
+    }, 250);
+
+    // Save timer directly to target DOM element to cancel it later
+    (e.target as any)._dragTimer = timer;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDragTaskId) {
+      // If user moves before 250ms, cancel the long-press to allow normal page scrolling
+      const timer = (e.target as any)._dragTimer;
+      if (timer) clearTimeout(timer);
+      return;
+    }
+
+    const touch = e.touches[0];
+    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elem) return;
+
+    // Search for nearest column element containing data-column-status
+    const columnElem = elem.closest('[data-column-status]');
+    if (columnElem) {
+      const statusVal = Number(columnElem.getAttribute('data-column-status'));
+      setTouchOverColumn(statusVal);
+    } else {
+      setTouchOverColumn(null);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Clean up any remaining long-press timer
+    const timer = (e.target as any)._dragTimer;
+    if (timer) clearTimeout(timer);
+
+    if (!touchDragTaskId) return;
+
+    if (touchOverColumn !== null) {
+      const task = tasks.find((t) => t.id === touchDragTaskId);
+      if (task && task.status !== touchOverColumn) {
+        patchTaskStatus(touchDragTaskId, touchOverColumn);
+      }
+    }
+
+    // Reset touch drag states
+    setTouchDragTaskId(null);
+    setTouchOverColumn(null);
+  };
+
   useEffect(() => {
     if (listId) {
       fetchTasks();
@@ -169,7 +239,10 @@ export const ListPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start pt-2">
               {/* Column 1: To Do */}
               <div
-                className="glass-panel p-4 space-y-4 rounded-2xl border border-slate-200/5 transition-colors"
+                data-column-status={0}
+                className={`glass-panel p-4 space-y-4 rounded-2xl border transition-all duration-300 ${
+                  touchOverColumn === 0 ? 'border-blue-500/50 bg-blue-900/10 scale-[1.01]' : 'border-slate-200/5'
+                }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, 0)}
@@ -193,6 +266,10 @@ export const ListPage: React.FC = () => {
                       onCardClick={handleCardClick}
                       draggable={true}
                       onDragStart={(e) => handleDragStart(e, task.id)}
+                      onTouchStart={(e) => handleTouchStart(task.id, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      isTouchDragging={touchDragTaskId === task.id}
                     />
                   ))}
                 </div>
@@ -200,7 +277,10 @@ export const ListPage: React.FC = () => {
 
               {/* Column 2: In Progress */}
               <div
-                className="glass-panel p-4 space-y-4 rounded-2xl border border-slate-200/5 transition-colors"
+                data-column-status={1}
+                className={`glass-panel p-4 space-y-4 rounded-2xl border transition-all duration-300 ${
+                  touchOverColumn === 1 ? 'border-blue-500/50 bg-blue-900/10 scale-[1.01]' : 'border-slate-200/5'
+                }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, 1)}
@@ -224,6 +304,10 @@ export const ListPage: React.FC = () => {
                       onCardClick={handleCardClick}
                       draggable={true}
                       onDragStart={(e) => handleDragStart(e, task.id)}
+                      onTouchStart={(e) => handleTouchStart(task.id, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      isTouchDragging={touchDragTaskId === task.id}
                     />
                   ))}
                 </div>
@@ -231,7 +315,10 @@ export const ListPage: React.FC = () => {
 
               {/* Column 3: Complete */}
               <div
-                className="glass-panel p-4 space-y-4 rounded-2xl border border-slate-200/5 transition-colors"
+                data-column-status={2}
+                className={`glass-panel p-4 space-y-4 rounded-2xl border transition-all duration-300 ${
+                  touchOverColumn === 2 ? 'border-blue-500/50 bg-blue-900/10 scale-[1.01]' : 'border-slate-200/5'
+                }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, 2)}
@@ -255,6 +342,10 @@ export const ListPage: React.FC = () => {
                       onCardClick={handleCardClick}
                       draggable={true}
                       onDragStart={(e) => handleDragStart(e, task.id)}
+                      onTouchStart={(e) => handleTouchStart(task.id, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      isTouchDragging={touchDragTaskId === task.id}
                     />
                   ))}
                 </div>
