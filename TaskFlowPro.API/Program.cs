@@ -10,6 +10,10 @@ using TaskFlowPro.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Bind to PORT env variable for Render deployment
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5100";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 // 1. Database Connection (PostgreSQL / NeonDB)
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
@@ -50,9 +54,12 @@ builder.Services.AddAuthentication(options =>
 // 4. SignalR Real-time communication
 builder.Services.AddSignalR();
 
-// 5. CORS policy for React Frontend Client (local dev port 5173)
+// 5. CORS policy for React Frontend Client
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:5173" };
+
 builder.Services.AddCors(opt => opt.AddPolicy("ReactApp", p =>
-    p.WithOrigins("http://localhost:5173")
+    p.WithOrigins(allowedOrigins)
      .AllowAnyHeader()
      .AllowAnyMethod()
      .AllowCredentials()));
