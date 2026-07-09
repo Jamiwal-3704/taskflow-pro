@@ -5,8 +5,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Suspense, lazy } from 'react';
 
 // Lazy-loaded routes
-const Login = lazy(() => import('./pages/Auth/Login'));
-const Register = lazy(() => import('./pages/Auth/Register'));
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 const OnboardingWizard = lazy(() => import('./pages/Onboarding/OnboardingWizard'));
 const DashboardLayout = lazy(() => import('./pages/Dashboard/DashboardLayout'));
 const TodayView = lazy(() => import('./pages/Today/TodayView').then(module => ({ default: module.TodayView })));
