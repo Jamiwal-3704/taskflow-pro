@@ -16,11 +16,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
   const navigate = useNavigate();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TodoTask[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = setTimeout(async () => {
@@ -47,6 +49,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchResults([]);
         setSearchQuery('');
+      }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -185,9 +190,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </div>
 
           {/* Avatar with dropdown */}
-          <div className="relative group">
+          <div ref={profileMenuRef} className="relative">
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer select-none glass-panel"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer select-none glass-panel hover:bg-slate-200/10 dark:hover:bg-slate-800/10 transition-colors"
               style={{ border: '1px solid var(--glass-border)' }}
             >
               {user?.avatarUrl ? (
@@ -204,38 +210,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             </div>
 
             {/* Dropdown */}
-            <div className="absolute right-0 top-full pt-2 w-44 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50">
-              <div className="glass-panel rounded-xl shadow-2xl py-1 transform translate-y-1 group-hover:translate-y-0">
-                <button
-                  onClick={() => setIsProfileOpen(true)}
-                  className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
-                  style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--hover-bg)')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
-                >
-                  <Settings className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-                  Profile Settings
-                </button>
-                <button
-                  onClick={() => navigate('/dashboard/guide')}
-                  className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
-                  style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--hover-bg)')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
-                >
-                  <HelpCircle className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
-                  Tour Guide
-                </button>
-                <div style={{ borderTop: '1px solid var(--glass-border)', margin: '4px 0' }} />
-                <button
-                  onClick={handleLogout}
-                  className="w-full px-4 py-2.5 text-xs font-bold text-left cursor-pointer flex items-center gap-2 transition-colors text-rose-500 hover:bg-rose-500/10"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full pt-2 w-44 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="glass-panel rounded-xl shadow-2xl py-1">
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      setIsProfileOpen(true);
+                    }}
+                    className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
+                    style={{ color: 'var(--text-secondary)' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--hover-bg)')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+                  >
+                    <Settings className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                    Profile Settings
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      navigate('/dashboard/guide');
+                    }}
+                    className="w-full px-4 py-2.5 text-xs font-medium text-left cursor-pointer flex items-center gap-2 transition-colors"
+                    style={{ color: 'var(--text-secondary)' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--hover-bg)')}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+                  >
+                    <HelpCircle className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                    Tour Guide
+                  </button>
+                  <div style={{ borderTop: '1px solid var(--glass-border)', margin: '4px 0' }} />
+                  <button
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full px-4 py-2.5 text-xs font-bold text-left cursor-pointer flex items-center gap-2 transition-colors text-rose-500 hover:bg-rose-500/10"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
