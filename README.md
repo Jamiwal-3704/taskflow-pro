@@ -9,9 +9,10 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 
 ## ✨ Key Features
 
-- **🔒 Secure Authentication:** Fully custom JWT-based authentication system with real-time input validation, strong password enforcement, and a gorgeous animated neon-blob background.
+- **🔒 Secure Authentication:** Fully custom JWT-based authentication system with real-time input validation, strong password enforcement, gorgeous animated neon-blob backgrounds, and clear inline validation error banners.
 - **📋 Smart Task Management:** Create, edit, and organize tasks across multiple custom lists. Easily mark tasks as important, set deadlines, and track your performance.
-- **🖱️ Drag & Drop Kanban Board:** Visualize your workflow! Seamlessly drag tasks between "To Do", "In Progress", and "Complete" columns. The database updates your task status instantly.
+- **🖱️ Drag & Drop Kanban Board & Calendar:** Visualize your workflow! Seamlessly drag tasks between "To Do", "In Progress", and "Complete" columns, or drag them directly onto calendar dates to reschedule them.
+- **📱 Touch & Mobile-Friendly Gestures:** Native touch drag-and-drop support for mobile/tablets. Press and hold (long-press for 250ms) to trigger haptic vibration feedback, lock scrolling, and drag-and-drop tasks onto any calendar date.
 - **🔍 Global Search:** A powerful, debounced global search command palette that lets you instantly find any task across all of your lists and navigate directly to it.
 - **📈 Day-Wise Tracking & Streaks:** Advanced daily progress tracking with streak counters and dynamic heatmaps to keep you motivated and productive every single day.
 - **🚀 Onboarding Wizard:** A beautiful, multi-step interactive onboarding flow to welcome new users and guide them through setting up their first project.
@@ -19,7 +20,7 @@ Built with a focus on premium aesthetics and seamless user experience, TaskFlow 
 - **🎨 Premium UI/UX Engineering:** Built with Tailwind CSS, featuring subtle micro-animations, customized scrollbars, and dynamic gradients.
 - **🛡️ Dual-Layer Security:** Secured via Cloudflare (Layer 1) and native ASP.NET Core Rate Limiting (Layer 2) to mitigate brute-forcing and API abuse.
 - **⚡ Perceived Performance:** Integrated advanced Shimmer UI (skeleton loaders) to mask network latency and ensure the app feels instantaneous.
-- **💎 Hardware-Accelerated Scrolling:** Powered by the Lenis smooth-scrolling engine for a luxurious, "royal" scrolling experience alongside glassmorphism and parallax backgrounds.
+- **💎 Hardware-Accelerated Scrolling:** Powered by the Lenis smooth-scrolling engine for a luxurious, "royal" scrolling experience (now fully integrated inside scrollable modals as well) alongside glassmorphism and parallax backgrounds.
 - **🌗 Seamless Light & Dark Mode:** Carefully engineered global theming architecture ensuring flawless accessibility and contrast across both visual modes.
 - **👨‍💻 Integrated Developer Portfolio:** A massive, dedicated "About" page acting as an immersive portfolio—showcasing the complete 1-month engineering sprint, tech stack, and developer profile.
 
