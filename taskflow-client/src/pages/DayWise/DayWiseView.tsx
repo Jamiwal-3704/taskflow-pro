@@ -19,6 +19,74 @@ export const DayWiseView: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
 
+  // Mobile/Touch Drag and Drop states
+  const [touchDragTaskId, setTouchDragTaskId] = useState<string | null>(null);
+  const [touchOverDate, setTouchOverDate] = useState<string | null>(null);
+
+  // Prevent default scroll behavior when actively dragging on touch devices
+  useEffect(() => {
+    if (!touchDragTaskId) return;
+
+    const preventDefault = (e: TouchEvent) => {
+      if (e.cancelable) e.preventDefault();
+    };
+
+    window.addEventListener('touchmove', preventDefault, { passive: false });
+    return () => {
+      window.removeEventListener('touchmove', preventDefault);
+    };
+  }, [touchDragTaskId]);
+
+  const handleTouchStart = (taskId: string, e: React.TouchEvent) => {
+    // Start a 250ms long-press timer to initiate dragging
+    const timer = setTimeout(() => {
+      setTouchDragTaskId(taskId);
+      if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback feedback
+    }, 250);
+
+    // Save timer directly to target DOM element to cancel it later
+    (e.target as any)._dragTimer = timer;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDragTaskId) {
+      // If user moves before 250ms, cancel the long-press to allow normal page scrolling
+      const timer = (e.target as any)._dragTimer;
+      if (timer) clearTimeout(timer);
+      return;
+    }
+
+    const touch = e.touches[0];
+    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elem) return;
+
+    // Search for nearest day element containing data-date
+    const dayElem = elem.closest('[data-date]');
+    if (dayElem) {
+      const dateStr = dayElem.getAttribute('data-date');
+      setTouchOverDate(dateStr);
+    } else {
+      setTouchOverDate(null);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    // Clean up any remaining long-press timer
+    const timer = (e.target as any)._dragTimer;
+    if (timer) clearTimeout(timer);
+
+    if (!touchDragTaskId) return;
+
+    if (touchOverDate) {
+      const targetDate = new Date(touchOverDate);
+      handleDropTask(touchDragTaskId, targetDate);
+    }
+
+    // Reset drag states
+    setTouchDragTaskId(null);
+    setTouchOverDate(null);
+  };
+
   // Helper to safely convert local date to ISO string without timezones shifting the day backwards
   const getSafeISO = (date: Date) => format(date, "yyyy-MM-dd'T'12:00:00.000'Z'");
 
@@ -165,6 +233,7 @@ export const DayWiseView: React.FC = () => {
         onChangeDate={setSelectedDate}
         tasks={tasks}
         onDropTask={handleDropTask}
+        touchOverDate={touchOverDate}
       />
 
       {/* Date Header Title & Quick Add */}
@@ -231,6 +300,10 @@ export const DayWiseView: React.FC = () => {
                 setModalError(null);
                 setIsModalOpen(true);
               }}
+              onTouchStart={(e) => handleTouchStart(task.id, e)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              isTouchDragging={touchDragTaskId === task.id}
             />
           ))}
 

@@ -11,6 +11,10 @@ interface TaskCardProps {
   onDragStart?: (e: React.DragEvent<HTMLDivElement>) => void;
   onMoveTask?: (taskId: string, newDate: string) => void;
   onCopyTask?: (task: TodoTask, newDate: string) => void;
+  onTouchStart?: (e: React.TouchEvent<HTMLDivElement>) => void;
+  onTouchMove?: (e: React.TouchEvent<HTMLDivElement>) => void;
+  onTouchEnd?: (e: React.TouchEvent<HTMLDivElement>) => void;
+  isTouchDragging?: boolean;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
@@ -22,6 +26,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onDragStart,
   onMoveTask,
   onCopyTask,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  isTouchDragging,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   // Format dates: [DD/MM/YY | HH:MM PM]
@@ -97,10 +105,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({
       draggable={draggable}
       onDragStart={onDragStart}
       onClick={() => onCardClick(task)}
-      className={`p-4 glass-card border ${getBorderColor()} rounded-xl cursor-pointer flex flex-col justify-between gap-3 shadow-md transition-all hover:scale-[1.01] ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      className={`p-4 glass-card border ${getBorderColor()} rounded-xl cursor-pointer flex flex-col justify-between gap-3 shadow-md transition-all hover:scale-[1.01] ${draggable ? 'cursor-grab active:cursor-grabbing' : ''} ${isTouchDragging ? 'opacity-40 scale-[0.98] border-blue-500/80 border-2 shadow-[0_0_20px_rgba(59,130,246,0.25)]' : ''}`}
       style={task.colorHex ? { 
-        borderColor: task.colorHex,
-        boxShadow: `0 4px 20px -2px ${task.colorHex}30, inset 0 0 10px -5px ${task.colorHex}20` 
+        borderColor: isTouchDragging ? 'var(--blue-500)' : task.colorHex,
+        boxShadow: isTouchDragging ? '0 0 20px rgba(59, 130, 246, 0.25)' : `0 4px 20px -2px ${task.colorHex}30, inset 0 0 10px -5px ${task.colorHex}20` 
       } : undefined}
     >
       <div>
